@@ -1,0 +1,29 @@
+﻿{
+  "assembly": [
+    "TreeTable.dll"
+  ],
+  "javascript": [
+    "Resources/layui/layui.js",
+    "Resources/layui/lay/modules/code.js",
+    "Resources/layui/lay/modules/form.js",
+    "Resources/layui/lay/modules/layer.js",
+    "Resources/layui/lay/modules/table.js",
+    "Resources/layui/lay/modules/tree.js",
+    "Resources/js/treeTable.js",
+    "Resources/TreeTable.js"
+  ],
+  "css": [
+    "Resources/layui/css/modules/laydate/default/laydate.css",
+    "Resources/layui/css/modules/layer/default/layer.css",
+    "Resources/layui/css/modules/code.css",
+    "Resources/layui/css/layui.css",
+    "Resources/layui/css/layui.mobile.css"
+  ],
+  "image": "Resources/TreeTableLogo.png",
+  "description": "树形表格插件",
+  "name": "TreeTable",
+  "pluginType": "cellType",
+  "guid": "3de26040-a450-46bb-a55c-b52068e40d2d",
+  "version": "1.0.0.0",
+  "dependenceVersion": "7.0.100.0"
+}
