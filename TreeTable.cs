@@ -1,9 +1,11 @@
-﻿using GrapeCity.Forguncy.CellTypes;
+﻿using CommonUtilities;
+using GrapeCity.Forguncy.CellTypes;
 using GrapeCity.Forguncy.Commands;
 using GrapeCity.Forguncy.Plugin;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -15,13 +17,41 @@ namespace TreeTable
 {
     [Designer("TreeTable.TreeTableDesigner, TreeTable")]
     [Icon("pack://application:,,,/TreeTable;component/Resources/TreeTableIcon.png")]
-    public class TreeTable : CellType, IReferenceListView, IReferenceListViewColumn
+    [TreeTableStyleTemplateSupport]
+    public class TreeTable : CellType, IReferenceListView, IReferenceListViewColumn, IStyleTemplateSupport
     {
         [DisplayName("设置绑定表格参数")]
         public ListViewInfo SetBindingListViewParam { get; set; }
 
         [DisplayName("设置展开方式")]
         public UnfoldingMode SetUnfoldingMode { get; set; }
+
+        [DisplayName("展开到层级：")]
+        public int UnfoldingLevel
+        {
+            get; set;
+        }
+
+        [CategoryHeader("网格线设置")]
+        [DisplayName("是否显示网格线")]
+        public bool GridLineShow
+        {
+            get; set;
+        }
+
+        [DisplayName("网格线宽度：")]
+        public int GridLineWidth
+        {
+            get; set;
+        }
+
+        [DisplayName("网格线颜色：")]
+        [ColorProperty]
+        public string GridLineColor
+        {
+            get; set;
+        }
+
 
         [DefaultValue(null)]
         [Browsable(false)]
@@ -60,6 +90,18 @@ namespace TreeTable
             {
                 SetBindingListViewParam.ListViewName = newName;
             }
+        }
+        public override bool GetDesignerPropertyVisible(string propertyName)
+        {
+            if (string.Equals(propertyName, nameof(GridLineWidth)) || string.Equals(propertyName, nameof(GridLineColor)))
+            {
+                return GridLineShow;
+            }
+            if (string.Equals(propertyName,nameof(UnfoldingLevel)))
+            {
+                return SetUnfoldingMode == UnfoldingMode.展开到指定层级;
+            }
+            return base.GetDesignerPropertyVisible(propertyName);
         }
 
         public override string ToString()
@@ -120,10 +162,10 @@ namespace TreeTable
 
             control = new SetBindingListView(BuilderContext);
             control.ViewModel.Model = dataContext?.Value as ListViewInfo;
-            StackPanel buttonControl = new StackPanel() { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 5, 5, 10) };
-            Button okButton = new Button() { Content = "确认", Width = 80 };
+            StackPanel buttonControl = new StackPanel() { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 0, 10, 10) };
+            Button okButton = new Button() { Content = "确认", Width = 75 };
             okButton.Click += OkButton_Click;
-            Button cancelButton = new Button() { Content = "取消", Width = 80, Margin = new Thickness(8, 0, 0, 0) };
+            Button cancelButton = new Button() { Content = "取消", Width = 75, Margin = new Thickness(5, 0, 0, 0) };
             cancelButton.Click += CancelButton_Click;
             buttonControl.Children.Add(okButton);
             buttonControl.Children.Add(cancelButton);
@@ -140,8 +182,8 @@ namespace TreeTable
             {
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
                 Title = "设置绑定表格参数",
-                Width = 410d,
-                Height = 630d,
+                Width = 480d,
+                Height = 546d,
                 Content = grid
             };
             _ = window.ShowDialog();
@@ -165,18 +207,21 @@ namespace TreeTable
 
         public List<Command> CommandList { get; set; }
 
+        public HyperlinkTemplate HyperlinkTemplate { get; set; }
+
         public FieldType Type { get; set; }
 
-        public MyFieldInfo(string field, string name, FieldType type, List<Command> commandList)
+        public MyFieldInfo(string field, string name, FieldType type, List<Command> commandList, HyperlinkTemplate hyperlinkTemplate)
         {
             Field = field;
             Name = name;
             Type = type;
             CommandList = commandList;
+            HyperlinkTemplate = hyperlinkTemplate;
         }
         public MyFieldInfo Clone()
         {
-            return new MyFieldInfo(Field, Name, Type, CommandList);
+            return new MyFieldInfo(Field, Name, Type, CommandList, HyperlinkTemplate);
         }
     }
 
@@ -207,15 +252,98 @@ namespace TreeTable
         }
     }
 
+    public class HyperlinkTemplate
+    {
+        public object BackgroundColor
+        {
+            get;
+            set;
+        }
+
+        public object FrontColor
+        {
+            get;
+            set;
+        }
+
+        public bool IsBold
+        {
+            get;
+            set;
+        }
+
+        public HyperlinkTemplate(object backgroundColor, object frontColor, bool isBold)
+        {
+            BackgroundColor = backgroundColor;
+            FrontColor = frontColor;
+            IsBold = isBold;
+        }
+    }
+
     public enum UnfoldingMode
     {
-        默认收起,
-        默认展开
+        全部收起,
+        全部展开,
+        展开到指定层级
     }
 
     public enum FieldType
     {
         Normal,
-        Custom
+        Button,
+        Hyperlink
+    }
+
+
+    public class TreeTableStyleTemplateSupportAttribute : CellTypeStyleTemplateSupportAttribute
+    {
+        protected const CellStates SupportStates = CellStates.Normal | CellStates.Selected;
+
+        private SupportStyles DefaultSupportStyles =
+                SupportStyles.BackgroundColor |
+                SupportStyles.BackgroundGradient |
+                SupportStyles.ForegroundColor |
+                SupportStyles.Opacity;
+        public TreeTableStyleTemplateSupportAttribute()
+        {
+            TemplateParts = new List<TemplatePart>()
+            {
+                new TemplatePart() { Name = "tableHead", SupportStates = CellStates.Normal, SupportStyles = DefaultSupportStyles },
+                new TemplatePart() { Name = "tableBody", SupportStates = SupportStates, SupportStyles = DefaultSupportStyles }
+            };
+        }
+
+        public override List<TemplatePart> TemplateParts { get; }
+
+
+        List<CellTypeStyleTemplate> presetTemplates;
+        public override List<CellTypeStyleTemplate> PresetTemplates
+        {
+            get
+            {
+                if (presetTemplates == null)
+                {
+                    presetTemplates = MakePresetStyleTemplates();
+                }
+                return presetTemplates;
+            }
+        }
+
+        public override string DefaultTemplateKey => "Style1";
+
+        protected string StyleFileName => "TreeTableStyle";
+
+        private List<CellTypeStyleTemplate> MakePresetStyleTemplates()
+        {
+            var dllDir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location.ToString());
+            var jsPath = System.IO.Path.Combine(dllDir, "Resources", "StyleTemplate", StyleFileName + ".js");
+            var json = File.ReadAllText(System.IO.Path.GetFullPath(jsPath));
+            var index = json.LastIndexOf("];");
+            if (index > 0)
+            {
+                json = json.Substring(0, index + 1) + json.Substring(index + 2, json.Length - index - 2);
+            }
+            return JsonUtilities.FromJsonString<List<CellTypeStyleTemplate>>(json);
+        }
     }
 }

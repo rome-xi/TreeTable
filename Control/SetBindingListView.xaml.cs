@@ -1,5 +1,7 @@
 ﻿using GrapeCity.Forguncy.CellTypes;
 using GrapeCity.Forguncy.Commands;
+using GrapeCity.Forguncy.Plugin;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -16,6 +18,9 @@ namespace TreeTable.Control
     public partial class SetBindingListView : UserControl
     {
         private readonly IBuilderContext builderContext;
+        private Window window;
+        private SetTemplate control;
+
         public SetBindingListView()
         {
             InitializeComponent();
@@ -43,7 +48,7 @@ namespace TreeTable.Control
         {
             ViewModel.SelectedRow = (sender as FrameworkElement).DataContext as MyFieldInfoViewModel;
 
-            if (ViewModel.SelectedRow.FieldInfo.Type == FieldType.Custom)
+            if (ViewModel.SelectedRow.FieldInfo.Type == FieldType.Button | ViewModel.SelectedRow.FieldInfo.Type == FieldType.Hyperlink)
             {
 
                 ICommandWindow window = builderContext.GetCommandWindow(CommandScope.Cell, GetCommandParams().ToList());
@@ -68,6 +73,20 @@ namespace TreeTable.Control
             }
         }
 
+        public IEnumerable<GenerateParam> GetCommandParams()
+        {
+            return ViewModel.MyFieldInfosViewModel.Where(c => c.FieldInfo.Type == FieldType.Normal).Select(c => GetParam(c.FieldInfo.Field)).ToList();
+        }
+
+        GenerateParam GetParam(string paramName)
+        {
+            if (!string.IsNullOrEmpty(paramName) && !paramName.StartsWith("="))
+            {
+                return new GenerateNormalParam() { ParamName = paramName, ParamScope = CommandScope.All };
+            }
+            return null;
+        }
+
         private void ComboBox_GotFocus(object sender, RoutedEventArgs e)
         {
             ViewModel.SelectedRow = (sender as FrameworkElement).DataContext as MyFieldInfoViewModel;
@@ -78,18 +97,50 @@ namespace TreeTable.Control
             ViewModel.SelectedRow = (sender as FrameworkElement).DataContext as MyFieldInfoViewModel;
         }
 
-        public IEnumerable<GenerateParam> GetCommandParams()
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
-            return ViewModel.MyFieldInfosViewModel.Where( c => c.FieldInfo.Type == FieldType.Normal).Select( c => GetParam(c.FieldInfo.Field)).ToList();
+            ViewModel.SelectedRow = (sender as FrameworkElement).DataContext as MyFieldInfoViewModel;
+            if (ViewModel.SelectedRow.FieldInfo.Type == FieldType.Hyperlink)
+            {
+                control = new SetTemplate(builderContext);
+                control.ViewModel.Model = ViewModel.SelectedRow.HyperlinkTemplate;
+                StackPanel buttonControl = new StackPanel() { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 5, 10, 10) };
+                Button okButton = new Button() { Content = "确认", Width = 75 };
+                okButton.Click += OkButton_Click;
+                Button cancelButton = new Button() { Content = "取消", Width = 75, Margin = new Thickness(5, 0, 0, 0) };
+                cancelButton.Click += CancelButton_Click;
+                buttonControl.Children.Add(okButton);
+                buttonControl.Children.Add(cancelButton);
+
+                Grid grid = new Grid();
+                grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
+                grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Auto) });
+                grid.Children.Add(control);
+                grid.Children.Add(buttonControl);
+                Grid.SetRow(control, 0);
+                Grid.SetRow(buttonControl, 1);
+
+                window = new Window
+                {
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                    Title = "设置超链接样式",
+                    Width = 310d,
+                    Height = 174d,
+                    Content = grid
+                };
+                window.ShowDialog();
+            }
         }
 
-        GenerateParam GetParam(string paramName)
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!string.IsNullOrEmpty(paramName) && !paramName.StartsWith("="))
-            {
-                return new GenerateNormalParam() { ParamName = paramName, ParamScope = CommandScope.All };
-            }
-            return null;
+            window.Close();
+        }
+
+        private void OkButton_Click(object sender, RoutedEventArgs e)
+        {
+            ViewModel.SelectedRow.HyperlinkTemplate = control.ViewModel.Model;
+            window.Close();
         }
     }
 
@@ -125,7 +176,8 @@ namespace TreeTable.Control
                             Type = myFieldInfo.Type
                         },
                         Name = myFieldInfo.Name,
-                        CommandList = myFieldInfo.CommandList
+                        CommandList = myFieldInfo.CommandList,
+                        HyperlinkTemplate = myFieldInfo.HyperlinkTemplate
                     };
                     MyFieldInfosViewModel.Add(myFieldInfoViewModel);
                 }
@@ -203,7 +255,7 @@ namespace TreeTable.Control
 
         private MyFieldInfo[] ConverMyFieldInfoViewModel(ObservableCollection<MyFieldInfoViewModel> myFieldInfosViewModel)
         {
-            return myFieldInfosViewModel.Select(viewModel => new MyFieldInfo(viewModel.FieldInfo.Field, viewModel.Name, viewModel.FieldInfo.Type, viewModel.CommandList)).ToArray();
+            return myFieldInfosViewModel.Select(viewModel => new MyFieldInfo(viewModel.FieldInfo.Field, viewModel.Name, viewModel.FieldInfo.Type, viewModel.CommandList, viewModel.HyperlinkTemplate)).ToArray();
         }
     }
 
@@ -221,12 +273,12 @@ namespace TreeTable.Control
             {
                 new FieldItem()
                 {
-                    Type = FieldType.Custom,
+                    Type = FieldType.Button,
                     Field = "Button"
                 },
                 new FieldItem()
                 {
-                    Type = FieldType.Custom,
+                    Type = FieldType.Hyperlink,
                     Field = "Hyperlink"
                 }
             }).ToList();
@@ -252,7 +304,8 @@ namespace TreeTable.Control
                 field = value;
                 Name = field.Field;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(Visible));
+                OnPropertyChanged(nameof(ButtonSettingVisible)); 
+                OnPropertyChanged(nameof(HyperlinkSettingVisible));
             }
         }
 
@@ -280,7 +333,20 @@ namespace TreeTable.Control
             }
         }
 
-        public Visibility Visible => FieldInfo?.Type == FieldType.Custom ? Visibility.Visible : Visibility.Hidden;
+        private HyperlinkTemplate hyperlinkTemplate;
+        public HyperlinkTemplate HyperlinkTemplate
+        {
+            get => hyperlinkTemplate;
+            set
+            {
+                hyperlinkTemplate = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Visibility ButtonSettingVisible => FieldInfo?.Type == FieldType.Button | FieldInfo?.Type == FieldType.Hyperlink ? Visibility.Visible : Visibility.Hidden;
+
+        public Visibility HyperlinkSettingVisible => FieldInfo?.Type == FieldType.Hyperlink ? Visibility.Visible : Visibility.Hidden;
     }
 
     public class FieldItem

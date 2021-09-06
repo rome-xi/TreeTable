@@ -5,45 +5,54 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:control="clr-namespace:TreeTable.Control" d:DataContext="{d:DesignInstance Type=control:SetBindingListViewViewModel}"
              mc:Ignorable="d" 
-             d:DesignHeight="546" d:DesignWidth="392">
-    <Grid Margin="0,0,0,0">
-        <Label Content="选择表格" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="97" Height="30" FontSize="16"/>
-        <ComboBox x:Name="TableList" ItemsSource="{Binding ListViewsList}" SelectedValue="{Binding ListViewName}" Margin="114,10,10,0" VerticalAlignment="Top" VerticalContentAlignment="Center" Height="31"/>
-        <Label Content="选择ID列" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="10,60,0,0" VerticalAlignment="Top" Width="97" Height="30" FontSize="16"/>
-        <ComboBox ItemsSource="{Binding ColumnsList}" SelectedValue="{Binding ID}" Margin="114,60,10,0" VerticalAlignment="Top" VerticalContentAlignment="Center" Height="31"/>
-        <Label Content="选择关联列" HorizontalContentAlignment="Center" HorizontalAlignment="Left" Margin="10,110,0,0" VerticalAlignment="Top" Width="97" Height="30" FontSize="16"/>
-        <ComboBox ItemsSource="{Binding ColumnsList}" SelectedValue="{Binding RelatedParentID}" Margin="114,110,10,0" VerticalAlignment="Top" VerticalContentAlignment="Center" Height="30"/>
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10,120,10,300">
-            <Button Width="80" Click="NewButtonClick" Height="30" Content="新增字段" Margin="0,0,0,20"/>
-            <Button Width="80" Click="DeleteButtonClick" Height="30" Content="删除字段" Margin="10,38,0,58"/>
+             d:DesignHeight="495" d:DesignWidth="450">
+    <Grid>
+        <Label Margin="15,20,355,0" Content="选择表格:" FontSize="12" Padding="0" VerticalContentAlignment="Center" Height="17" VerticalAlignment="Top"/>
+        <ComboBox x:Name="TableList" ItemsSource="{Binding ListViewsList}" SelectedValue="{Binding ListViewName}" Margin="93,17,15,0" Height="22" VerticalAlignment="Top"/>
+        <Label Margin="15,49,355,0" Content="选择ID列:"  FontSize="12" Padding="0" VerticalContentAlignment="Center" Height="17" VerticalAlignment="Top"/>
+        <ComboBox ItemsSource="{Binding ColumnsList}" SelectedValue="{Binding ID}" VerticalContentAlignment="Center"  Margin="93,47,15,0" Height="22" VerticalAlignment="Top"/>
+        <Label Margin="15,80,355,0" Content="选择关联列:" FontSize="12" VerticalContentAlignment="Stretch" Padding="0" Grid.IsSharedSizeScope="True" Height="15" VerticalAlignment="Top"/>
+        <ComboBox ItemsSource="{Binding ColumnsList}" SelectedValue="{Binding RelatedParentID}" VerticalContentAlignment="Center" Margin="93,77,15,0" Height="22" VerticalAlignment="Top"/>
+        <StackPanel Margin="15,114,256,0" Orientation="Horizontal" Height="24" VerticalAlignment="Top">
+            <Button Width="80" Click="NewButtonClick" Height="24" Content="新增字段"/>
+            <Button Width="80" Click="DeleteButtonClick" Height="24" Content="删除字段" Margin="10,0,0,0"/>
         </StackPanel>
 
-        <ListView Margin="10,200,10,10" ItemsSource="{Binding MyFieldInfosViewModel}" SelectedItem="{Binding SelectedRow}">
+        <ListView Margin="15,146,15,10" ItemsSource="{Binding MyFieldInfosViewModel}" SelectedItem="{Binding SelectedRow}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="展示字段" Width="130">
+                    <GridViewColumn Header="展示字段" Width="120">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <Grid>
-                                    <ComboBox ItemsSource="{Binding FieldList}" SelectedValue="{Binding FieldInfo}" GotFocus="ComboBox_GotFocus" DisplayMemberPath="Field" Width="125" Height="25" Margin="0,3,-7,0" Grid.ColumnSpan="1" VerticalAlignment="Top"  />
+                                    <ComboBox ItemsSource="{Binding FieldList}" SelectedValue="{Binding FieldInfo}" GotFocus="ComboBox_GotFocus" DisplayMemberPath="Field" Width="108" Height="22" Grid.ColumnSpan="1"/>
                                 </Grid>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="字段显示名称" Width="130">
+                    <GridViewColumn Header="字段显示名称" Width="154">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <Grid>
-                                    <TextBox BorderBrush="Gray" BorderThickness="1" Text="{Binding Name}" GotFocus="TextBox_GotFocus" Width="125" Height="25" Margin="0,3,0,0" />
+                                    <TextBox BorderBrush="Gray" BorderThickness="1" Text="{Binding Name}" GotFocus="TextBox_GotFocus" Width="142" Height="22"/>
                                 </Grid>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="命令设置" Width="auto">
+                    <GridViewColumn Header="命令设置" Width="75">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <Grid>
-                                    <Button Width="90" Click="SetCommandList" Height="25" Visibility="{Binding Visible}" Content="编辑命令"/>
+                                    <Button Width="50" Click="SetCommandList" Height="22" Visibility="{Binding ButtonSettingVisible}" Content="命令" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="样式设置" Width="75">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Button Width="50" Click="Button_Click" Height="22" Visibility="{Binding HyperlinkSettingVisible}" Content="样式"/>
                                 </Grid>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>

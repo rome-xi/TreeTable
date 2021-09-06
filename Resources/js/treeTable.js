@@ -54,7 +54,7 @@ layui.define([], function (exports){
 				tr += '<td ' + style + (left ? 'data-down' : '') + '>' + icon + (is_table ? '' : (is_checked ? checked : checkbox)) + (obj.template ? obj.template(item) : item[obj.key]) + '</td>';
 			});
 			var box = is_table ? $(is_checked ? checked : checkbox).wrap('<td style="width:28px;">').parent().prop('outerHTML') : '';
-			tbody += '<tr class="' + hide_class + '" data-id="' + item[e.primary_key] + '" data-pid="' + item[e.parent_key] + '">' + box + tr + '</tr>';
+			tbody += '<tr class="' + hide_class + '" data-id="' + item[e.primary_key] + '" data-pid="' + item[e.parent_key] + '" listViewIndex="' + item["ListViewRowIndex"] + '">' + box + tr + '</tr>';
 		});
 		// 处理表树和树的赋值模板
 		var table = is_table ? '<thead><tr data-id="' + e.top_value + '">' + thead + '</tr></thead><tbody>' + tbody + '</tbody>' : tbody.replace(/<tr/g, '<ul').replace(/tr>/g, 'ul>').replace(/<td/g, '<li').replace(/td>/g, 'li>');
