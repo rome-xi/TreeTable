@@ -104,7 +104,7 @@ namespace TreeTable.Control
             {
                 control = new SetTemplate(builderContext);
                 control.ViewModel.Model = ViewModel.SelectedRow.HyperlinkTemplate;
-                StackPanel buttonControl = new StackPanel() { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 5, 10, 10) };
+                StackPanel buttonControl = new StackPanel() { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 5, 15, 10) };
                 Button okButton = new Button() { Content = "确认", Width = 75 };
                 okButton.Click += OkButton_Click;
                 Button cancelButton = new Button() { Content = "取消", Width = 75, Margin = new Thickness(5, 0, 0, 0) };
@@ -124,7 +124,7 @@ namespace TreeTable.Control
                 {
                     WindowStartupLocation = WindowStartupLocation.CenterScreen,
                     Title = "设置超链接样式",
-                    Width = 310d,
+                    Width = 325d,
                     Height = 174d,
                     Content = grid
                 };

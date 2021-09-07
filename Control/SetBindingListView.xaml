@@ -5,20 +5,46 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:control="clr-namespace:TreeTable.Control" d:DataContext="{d:DesignInstance Type=control:SetBindingListViewViewModel}"
              mc:Ignorable="d" 
-             d:DesignHeight="495" d:DesignWidth="450">
-    <Grid>
-        <Label Margin="15,20,355,0" Content="选择表格:" FontSize="12" Padding="0" VerticalContentAlignment="Center" Height="17" VerticalAlignment="Top"/>
-        <ComboBox x:Name="TableList" ItemsSource="{Binding ListViewsList}" SelectedValue="{Binding ListViewName}" Margin="93,17,15,0" Height="22" VerticalAlignment="Top"/>
-        <Label Margin="15,49,355,0" Content="选择ID列:"  FontSize="12" Padding="0" VerticalContentAlignment="Center" Height="17" VerticalAlignment="Top"/>
-        <ComboBox ItemsSource="{Binding ColumnsList}" SelectedValue="{Binding ID}" VerticalContentAlignment="Center"  Margin="93,47,15,0" Height="22" VerticalAlignment="Top"/>
-        <Label Margin="15,80,355,0" Content="选择关联列:" FontSize="12" VerticalContentAlignment="Stretch" Padding="0" Grid.IsSharedSizeScope="True" Height="15" VerticalAlignment="Top"/>
-        <ComboBox ItemsSource="{Binding ColumnsList}" SelectedValue="{Binding RelatedParentID}" VerticalContentAlignment="Center" Margin="93,77,15,0" Height="22" VerticalAlignment="Top"/>
-        <StackPanel Margin="15,114,256,0" Orientation="Horizontal" Height="24" VerticalAlignment="Top">
-            <Button Width="80" Click="NewButtonClick" Height="24" Content="新增字段"/>
-            <Button Width="80" Click="DeleteButtonClick" Height="24" Content="删除字段" Margin="10,0,0,0"/>
+             d:DesignHeight="485" d:DesignWidth="450">
+    <Grid Margin="15,20,15,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="10"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="10"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="10"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="10"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="80"></ColumnDefinition>
+            <ColumnDefinition Width="340"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        
+        <Label Grid.Row="0" Grid.Column="0" Content="选择表格:" Padding="0" VerticalContentAlignment="Center" Height="17"/>
+        <ComboBox x:Name="TableList" ItemsSource="{Binding ListViewsList}" SelectedValue="{Binding ListViewName}"  Grid.Row="0" Grid.Column="1" Height="22"/>
+        <Label Grid.Row="2" Grid.Column="0" Content="选择ID列:" Padding="0" VerticalContentAlignment="Center" Height="17"/>
+        <ComboBox ItemsSource="{Binding ColumnsList}" SelectedValue="{Binding ID}" Grid.Row="2" Grid.Column="1" Height="22"/>
+        <Label Grid.Row="4" Grid.Column="0" Content="选择关联列:" VerticalContentAlignment="Stretch" Padding="0" Grid.IsSharedSizeScope="True" Height="15"/>
+        <ComboBox ItemsSource="{Binding ColumnsList}" SelectedValue="{Binding RelatedParentID}" VerticalContentAlignment="Center" Grid.Row="4" Grid.Column="1" Height="22"/>
+        <StackPanel Grid.ColumnSpan="2" Grid.Row="6" Orientation="Horizontal" Height="24">
+            <Button Click="NewButtonClick" Height="24" Width="80" Padding="0">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="pack://application:,,,/TreeTable;component/Resources/newField.png" Width="16" Height="16"></Image>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2,0,0,0">新建字段</TextBlock>
+                </StackPanel>
+            </Button>
+            <Button Click="DeleteButtonClick" Height="24" Width="80" Margin="10,0,0,0" Padding="0">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="pack://application:,,,/TreeTable;component/Resources/deleteField.png" Width="16" Height="16"></Image>
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2,0,0,0">删除字段</TextBlock>
+                </StackPanel>
+            </Button>
         </StackPanel>
 
-        <ListView Margin="15,146,15,10" ItemsSource="{Binding MyFieldInfosViewModel}" SelectedItem="{Binding SelectedRow}">
+        <ListView Grid.ColumnSpan="2" Grid.Row="8" ItemsSource="{Binding MyFieldInfosViewModel}" SelectedItem="{Binding SelectedRow}" Height="310">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="展示字段" Width="120">
@@ -30,30 +56,26 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="字段显示名称" Width="154">
+                    <GridViewColumn Header="字段显示名称" Width="146">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <Grid>
-                                    <TextBox BorderBrush="Gray" BorderThickness="1" Text="{Binding Name}" GotFocus="TextBox_GotFocus" Width="142" Height="22"/>
+                                    <TextBox BorderBrush="Gray" BorderThickness="1" Text="{Binding Name}" GotFocus="TextBox_GotFocus" Width="134"/>
                                 </Grid>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="命令设置" Width="75">
+                    <GridViewColumn Header="命令设置" Width="70">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Grid>
-                                    <Button Width="50" Click="SetCommandList" Height="22" Visibility="{Binding ButtonSettingVisible}" Content="命令" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Grid>
+                                <Image MouseLeftButtonDown="SetCommandList" Source="pack://application:,,,/TreeTable;component/Resources/edit.png" Width="16" Height="16" Visibility="{Binding ButtonSettingVisible}" Margin="22,0,0,0"></Image>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="样式设置" Width="75">
+                    <GridViewColumn Header="样式设置" Width="70">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Grid>
-                                    <Button Width="50" Click="Button_Click" Height="22" Visibility="{Binding HyperlinkSettingVisible}" Content="样式"/>
-                                </Grid>
+                                <Image MouseLeftButtonDown="Button_Click" Source="pack://application:,,,/TreeTable;component/Resources/edit.png" Width="16" Height="16" Visibility="{Binding HyperlinkSettingVisible}" Margin="22,0,0,0"></Image>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

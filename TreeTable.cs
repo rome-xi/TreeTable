@@ -162,7 +162,7 @@ namespace TreeTable
 
             control = new SetBindingListView(BuilderContext);
             control.ViewModel.Model = dataContext?.Value as ListViewInfo;
-            StackPanel buttonControl = new StackPanel() { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 0, 10, 10) };
+            StackPanel buttonControl = new StackPanel() { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 10, 15, 10) };
             Button okButton = new Button() { Content = "确认", Width = 75 };
             okButton.Click += OkButton_Click;
             Button cancelButton = new Button() { Content = "取消", Width = 75, Margin = new Thickness(5, 0, 0, 0) };
@@ -182,7 +182,7 @@ namespace TreeTable
             {
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
                 Title = "设置绑定表格参数",
-                Width = 480d,
+                Width = 465d,
                 Height = 546d,
                 Content = grid
             };

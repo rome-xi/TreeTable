@@ -12,7 +12,6 @@
 		var cellTypeMetaData = element.CellType;
 
         page.bind("PageDefaultDataLoaded", function () {
-            var unfoldingMethod = cellTypeMetaData.SetUnfoldingMethod;
             var listViewData = self.getListViewData(cellTypeMetaData.SetBindingListViewParam);
             var colums = self.getColums(cellTypeMetaData.SetBindingListViewParam);
             self.fillingTable(self, listViewData, colums, cellTypeMetaData);
@@ -142,14 +141,6 @@
                 //re.data.push({ "id": 50, "pid": 0, "title": "1-4" }, { "id": 51, "pid": 50, "title": "1-4-1" });
                 //treeTable.render(re);
             });
-            // 全部展开
-            //o('.open-all').click(function () {
-            //	treeTable.openAll(re);
-            //})
-            // 全部关闭
-            //o('.close-all').click(function () {
-            //	treeTable.closeAll(re);
-            //})
             // 随机更换小图标
             o('.change-icon').click(function () {
                 var arr = [
@@ -192,7 +183,25 @@
             o(document).on("click", function (i) {
                 !o(i.target).parent().hasClass('layui-select-title') && !o(i.target).parents('table').length && !(!o(i.target).parents('table').length && o(i.target).hasClass('layui-icon')) && o(".layui-form-select").removeClass("layui-form-selected").find('.layui-anim').hide();
             });
-            
+
+
+            var unfoldingMode = cellTypeMetaData.SetUnfoldingMode;
+            if (unfoldingMode === 0) {
+                treeTable.closeAll(re);
+            } else if (unfoldingMode == 1) {
+                treeTable.openAll(re);
+            } else {
+                var unfoldingLevel = cellTypeMetaData.UnfoldingLevel;
+                var res = "";
+                for (var i = 0; i < re.data.length; i++) {
+                    if (re.data[i].level < unfoldingLevel) {
+                        res += "," + re.data[i].ID;
+                    }
+                }
+                localStorage.setItem(re.elem.substr(1), res.substr(1));
+                treeTable.render(re);
+            }
+
             self.decorateTable();
             self.bindEvents(cellTypeMetaData);
         });

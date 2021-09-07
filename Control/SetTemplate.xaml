@@ -5,10 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:control="clr-namespace:TreeTable.Control" d:DataContext="{d:DesignInstance Type=control:SetTemplateViewModel}"
              mc:Ignorable="d" 
-             d:DesignHeight="105" d:DesignWidth="300">
-    <Grid>
+             d:DesignHeight="90" d:DesignWidth="300">
+    <Grid Margin="15,15,15,0">
         <Grid.RowDefinitions>
-            <RowDefinition Height="15"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="10"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -16,15 +15,13 @@
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="15"></ColumnDefinition>
             <ColumnDefinition Width="60"></ColumnDefinition>
             <ColumnDefinition Width="210"></ColumnDefinition>
-            <ColumnDefinition Width="15"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Label Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" VerticalContentAlignment="Center" Height="17" Padding="0">背景色:</Label>
-        <ContentControl Grid.Row="1" Grid.Column="2" Content="{Binding BackgroundColor}" Width="210" ContentTemplate="{StaticResource ColorSelectorTemplate}" ></ContentControl>
-        <Label Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" VerticalContentAlignment="Center" Height="17" Padding="0">前景色:</Label>
-        <ContentControl Grid.Row="3" Grid.Column="2" Content="{Binding FrontColor}" Width="210" ContentTemplate="{StaticResource ColorSelectorTemplate}" ></ContentControl>
-        <CheckBox Grid.Row="5" Grid.Column="1" VerticalAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding IsBold}" Content="加粗" ></CheckBox>
+        <Label Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" VerticalContentAlignment="Center" Height="17" Padding="0">背景色:</Label>
+        <ContentControl Grid.Row="0" Grid.Column="1" Content="{Binding BackgroundColor}" Width="210" ContentTemplate="{StaticResource ColorSelectorTemplate}" ></ContentControl>
+        <Label Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" VerticalContentAlignment="Center" Height="17" Padding="0">前景色:</Label>
+        <ContentControl Grid.Row="2" Grid.Column="1" Content="{Binding FrontColor}" Width="210" ContentTemplate="{StaticResource ColorSelectorTemplate}" ></ContentControl>
+        <CheckBox Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" VerticalContentAlignment="Center" IsChecked="{Binding IsBold}" Content="加粗" ></CheckBox>
     </Grid>
 </UserControl>

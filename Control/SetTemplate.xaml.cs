@@ -55,6 +55,9 @@ namespace TreeTable.Control
             {
                 if (value == null)
                 {
+                    BackgroundColor = new ColorModel() { Value = null };
+                    FrontColor = new ColorModel() { Value = null };
+                    IsBold = false;
                     return;
                 }
                 BackgroundColor = new ColorModel() { Value = value.BackgroundColor };
