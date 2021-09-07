@@ -20,7 +20,7 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="80"></ColumnDefinition>
-            <ColumnDefinition Width="340"></ColumnDefinition>
+            <ColumnDefinition Width="335"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         
         <Label Grid.Row="0" Grid.Column="0" Content="选择表格:" Padding="0" VerticalContentAlignment="Center" Height="17"/>
@@ -75,7 +75,7 @@
                     <GridViewColumn Header="样式设置" Width="70">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Image MouseLeftButtonDown="Button_Click" Source="pack://application:,,,/TreeTable;component/Resources/edit.png" Width="16" Height="16" Visibility="{Binding HyperlinkSettingVisible}" Margin="22,0,0,0"></Image>
+                                <Image MouseLeftButtonDown="SetTemplate" Source="pack://application:,,,/TreeTable;component/Resources/edit.png" Width="16" Height="16" Visibility="{Binding HyperlinkSettingVisible}" Margin="22,0,0,0"></Image>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

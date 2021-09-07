@@ -182,7 +182,7 @@ namespace TreeTable
             {
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
                 Title = "设置绑定表格参数",
-                Width = 465d,
+                Width = 460d,
                 Height = 546d,
                 Content = grid
             };

@@ -97,7 +97,7 @@ namespace TreeTable.Control
             ViewModel.SelectedRow = (sender as FrameworkElement).DataContext as MyFieldInfoViewModel;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void SetTemplate(object sender, RoutedEventArgs e)
         {
             ViewModel.SelectedRow = (sender as FrameworkElement).DataContext as MyFieldInfoViewModel;
             if (ViewModel.SelectedRow.FieldInfo.Type == FieldType.Hyperlink)
