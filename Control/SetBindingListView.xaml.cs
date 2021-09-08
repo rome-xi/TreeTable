@@ -40,10 +40,12 @@ namespace TreeTable.Control
             ViewModel.SelectedRow = new MyFieldInfoViewModel(ViewModel.ColumnsList);
             ViewModel.MyFieldInfosViewModel.Add(ViewModel.SelectedRow);
         }
+
         public void DeleteButtonClick(object sender, RoutedEventArgs e)
         {
             _ = ViewModel.MyFieldInfosViewModel.Remove(ViewModel.SelectedRow);
         }
+
         private void SetCommandList(object sender, RoutedEventArgs e)
         {
             ViewModel.SelectedRow = (sender as FrameworkElement).DataContext as MyFieldInfoViewModel;
@@ -201,9 +203,9 @@ namespace TreeTable.Control
             }
         }
 
-
         public List<string> ListViewsList
         => BuilderContext?.EnumAllListViewInfos(BuilderContext.PageName).Select(t => { return t.ListViewName; }).ToList() ?? new List<string>();
+
         public List<string> ColumnsList => string.IsNullOrEmpty(ListViewName) ? new List<string>() : (BuilderContext?.EnumAllListViewInfos(BuilderContext.PageName).FirstOrDefault(t => t.ListViewName == ListViewName)?.GetAllColumnNames());
 
         private ObservableCollection<MyFieldInfoViewModel> myFieldInfos;
@@ -304,13 +306,12 @@ namespace TreeTable.Control
                 field = value;
                 Name = field.Field;
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(ButtonSettingVisible)); 
-                OnPropertyChanged(nameof(HyperlinkSettingVisible));
+                OnPropertyChanged(nameof(SetCommandsVisible)); 
+                OnPropertyChanged(nameof(SetTemplateVisible));
             }
         }
 
         private string name;
-
         public string Name
         {
             get => name;
@@ -320,7 +321,6 @@ namespace TreeTable.Control
                 OnPropertyChanged();
             }
         }
-
 
         private List<Command> commandList;
         public List<Command> CommandList
@@ -344,9 +344,9 @@ namespace TreeTable.Control
             }
         }
 
-        public Visibility ButtonSettingVisible => FieldInfo?.Type == FieldType.Button | FieldInfo?.Type == FieldType.Hyperlink ? Visibility.Visible : Visibility.Hidden;
+        public Visibility SetCommandsVisible => FieldInfo?.Type == FieldType.Button | FieldInfo?.Type == FieldType.Hyperlink ? Visibility.Visible : Visibility.Hidden;
 
-        public Visibility HyperlinkSettingVisible => FieldInfo?.Type == FieldType.Hyperlink ? Visibility.Visible : Visibility.Hidden;
+        public Visibility SetTemplateVisible => FieldInfo?.Type == FieldType.Hyperlink ? Visibility.Visible : Visibility.Hidden;
     }
 
     public class FieldItem

@@ -102,7 +102,6 @@
     <Resource Include="Resources\newField.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
-    <None Include="packages.config" />
     <None Include="PluginConfig.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

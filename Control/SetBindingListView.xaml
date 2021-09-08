@@ -68,14 +68,14 @@
                     <GridViewColumn Header="命令设置" Width="70">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Image MouseLeftButtonDown="SetCommandList" Source="pack://application:,,,/TreeTable;component/Resources/edit.png" Width="16" Height="16" Visibility="{Binding ButtonSettingVisible}" Margin="22,0,0,0"></Image>
+                                <Image MouseLeftButtonDown="SetCommandList" Source="pack://application:,,,/TreeTable;component/Resources/edit.png" Width="16" Height="16" Visibility="{Binding SetCommandsVisible}" Margin="22,0,0,0"></Image>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="样式设置" Width="70">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Image MouseLeftButtonDown="SetTemplate" Source="pack://application:,,,/TreeTable;component/Resources/edit.png" Width="16" Height="16" Visibility="{Binding HyperlinkSettingVisible}" Margin="22,0,0,0"></Image>
+                                <Image MouseLeftButtonDown="SetTemplate" Source="pack://application:,,,/TreeTable;component/Resources/edit.png" Width="16" Height="16" Visibility="{Binding SetTemplateVisible}" Margin="22,0,0,0"></Image>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

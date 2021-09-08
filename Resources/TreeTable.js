@@ -5,34 +5,40 @@
     }
 
     TreeTable.prototype.createContent = function () {
+
         var self = this;
-
-		var page = Forguncy.Page;
-        var element = this.CellElement;
-		var cellTypeMetaData = element.CellType;
-
-        page.bind("PageDefaultDataLoaded", function () {
-            var listViewData = self.getListViewData(cellTypeMetaData.SetBindingListViewParam);
-            var colums = self.getColums(cellTypeMetaData.SetBindingListViewParam);
-            self.fillingTable(self, listViewData, colums, cellTypeMetaData);
-		})
+        var page = Forguncy.Page;
 
         var container = $("<div id='" + this.ID + "'></div>");
-
-        var innerContainer = $(`<table class="layui-table layui-form" id="` + this.ID +`t" lay-size='sm'"></table>`);
-
+        var innerContainer = $(`<table class="layui-table layui-form" id="` + this.ID + `t" lay-size='sm'"></table>`);
         container.append(innerContainer);
+
+        //在页面数据加载完成后执行
+        page.bind("PageDefaultDataLoaded", function () {
+            var element = self.CellElement;
+            var cellTypeMetaData = element.CellType;
+            var setBindingListViewParam = cellTypeMetaData.SetBindingListViewParam;
+            //获取要展示数据的json对象数组
+            var listViewData = self.getListViewData(setBindingListViewParam);
+            //获取要展示列的json对象数组
+            var colums = self.getColums(setBindingListViewParam);
+            //填充树形表格
+            self.fillingTable(self, listViewData, colums);
+        })
 
         return container;
     };
 
-	TreeTable.prototype.getListViewData = function (ListViewParam) {
+    TreeTable.prototype.getListViewData = function (ListViewParam) {
+
 		var listViewName = ListViewParam.ListViewName;
 		var id = ListViewParam.ID;
 		var relatedParentID = ListViewParam.RelatedParentID;
 		var fieldInfos = ListViewParam.MyFieldInfos;
 		var fields = fieldInfos.map((info) => { return info.Field; });
-		var names = fieldInfos.map((info) => { return info.Name; });
+        var names = fieldInfos.map((info) => { return info.Name; });
+
+        //即使不显示ID与关联ID列，仍要在构造对象时拥有这两个属性的数据
 		fields.push(id);
 		fields.push(relatedParentID);
 
@@ -51,6 +57,7 @@
                     } else {
                         var font_weight = fieldInfos[j].HyperlinkTemplate.IsBold ? "bold" : "normal";
                     }
+                    //获取背景色和前景色
                     var background = Forguncy.ConvertToCssColor(fieldInfos[j].HyperlinkTemplate.BackgroundColor);
                     var color = Forguncy.ConvertToCssColor(fieldInfos[j].HyperlinkTemplate.FrontColor);
                     obj[queryField + j] = "<a href='#' style='font-weight:" + font_weight + ";background:" + background + ";color:" + color + "' rowIndex=" + i + " colIndex=" + j + ">" + names[j] + "</a>";
@@ -85,12 +92,13 @@
         return colums;
     }
 
-    TreeTable.prototype.fillingTable = function (self, listViewData, colums, cellTypeMetaData) {
+    TreeTable.prototype.fillingTable = function (self, listViewData, colums) {
         layui.use(['treeTable', 'layer', 'code', 'form'], function () {
             var o = layui.$,
                 form = layui.form,
                 layer = layui.layer,
                 treeTable = layui.treeTable;
+            //渲染生成表格对象
             var re = treeTable.render({
                 //innerContainerde的id
                 elem: '#' + self.ID + 't',
@@ -104,114 +112,83 @@
                 parent_key: '关联父ID',
                 //是否显示checkbox列
                 is_checkbox: false,
-                checked: {
-                    key: 'ID',
-                    data: [1, 4, 5, 2, 6, 3],
-                },
                 end: function (e) {
                     form.render();
                 },
                 //列设置
                 cols: colums
             });
+
+            self.setUnfolding(treeTable, re);
+            self.decorateTable();
+            self.bindEvents();
             // 监听展开关闭
-            treeTable.on('tree(flex)', function (data) {
-                //layer.msg(JSON.stringify(data));
-            });
+            //treeTable.on('tree(flex)', function (data) {
+            //    layer.msg(JSON.stringify(data));
+            //});
             // 监听checkbox选择
-            treeTable.on('tree(box)', function (data) {
-                if (o(data.elem).parents('#tree-table1').length) {
-                    var text = [];
-                    o(data.elem).parents('#tree-table1').find('.cbx.layui-form-checked').each(function () {
-                        o(this).parents('[data-pid]').length && text.push(o(this).parents('td').next().find('span').text());
-                    });
-                    o(data.elem).parents('#tree-table1').prev().find('input').val(text.join(','));
-                }
-            });
+            //treeTable.on('tree(box)', function (data) {
+            //    if (o(data.elem).parents('#tree-table1').length) {
+            //        var text = [];
+            //        o(data.elem).parents('#tree-table1').find('.cbx.layui-form-checked').each(function () {
+            //            o(this).parents('[data-pid]').length && text.push(o(this).parents('td').next().find('span').text());
+            //        });
+            //        o(data.elem).parents('#tree-table1').prev().find('input').val(text.join(','));
+            //    }
+            //});
             // 监听自定义
-            treeTable.on('tree(click)', function (data) {
-                //layer.msg(JSON.stringify(data));
-            });
+            //treeTable.on('tree(click)', function (data) {
+            //    //layer.msg(JSON.stringify(data));
+            //});
             // 获取选中值，返回值是一个数组（定义的primary_key参数集合）
-            o('.get-checked').click(function () {
-                layer.msg('选中参数' + treeTable.checked(re).join(','));
-            });
+            //o('.get-checked').click(function () {
+            //    layer.msg('选中参数' + treeTable.checked(re).join(','));
+            //});
             // 刷新重载树表（一般在异步处理数据后刷新显示）
-            o('.refresh').click(function () {
+            //o('.refresh').click(function () {
                 //re.data.push({ "id": 50, "pid": 0, "title": "1-4" }, { "id": 51, "pid": 50, "title": "1-4-1" });
                 //treeTable.render(re);
-            });
-            // 随机更换小图标
-            o('.change-icon').click(function () {
-                var arr = [
-                    {
-                        open: 'layui-icon layui-icon-set',
-                        close: 'layui-icon layui-icon-set-fill',
-                        left: 16,
-                    },
-                    {
-                        open: 'layui-icon layui-icon-rate',
-                        close: 'layui-icon layui-icon-rate-solid',
-                        left: 16,
-                    },
-                    {
-                        open: 'layui-icon layui-icon-tread',
-                        close: 'layui-icon layui-icon-praise',
-                        left: 16,
-                    },
-                    {
-                        open: 'layui-icon layui-icon-camera',
-                        close: 'layui-icon layui-icon-camera-fill',
-                        left: 16,
-                    },
-                    {
-                        open: 'layui-icon layui-icon-user',
-                        close: 'layui-icon layui-icon-group',
-                        left: 16,
-                    },
-                ];
-                var round = Math.round(Math.random() * (arr.length - 1));
-                re.icon = arr[round];
-                treeTable.render(re);
-            });
-            o('#tree1').on('click', '[data-down]', function () {
-                o(this).find('span').length && o(this).parents('.layui-unselect').find('input').val(o(this).text());
-            });
-            o('.layui-select-title').click(function () {
-                o(this).parent().hasClass('layui-form-selected') ? o(this).next().hide() : o(this).next().show(), o(this).parent().toggleClass('layui-form-selected');
-            });
-            o(document).on("click", function (i) {
-                !o(i.target).parent().hasClass('layui-select-title') && !o(i.target).parents('table').length && !(!o(i.target).parents('table').length && o(i.target).hasClass('layui-icon')) && o(".layui-form-select").removeClass("layui-form-selected").find('.layui-anim').hide();
-            });
-
-
-            var unfoldingMode = cellTypeMetaData.SetUnfoldingMode;
-            if (unfoldingMode === 0) {
-                treeTable.closeAll(re);
-            } else if (unfoldingMode == 1) {
-                treeTable.openAll(re);
-            } else {
-                var unfoldingLevel = cellTypeMetaData.UnfoldingLevel;
-                var res = "";
-                for (var i = 0; i < re.data.length; i++) {
-                    if (re.data[i].level < unfoldingLevel) {
-                        res += "," + re.data[i].ID;
-                    }
-                }
-                localStorage.setItem(re.elem.substr(1), res.substr(1));
-                treeTable.render(re);
-            }
-
-            self.decorateTable();
-            self.bindEvents(cellTypeMetaData);
+            //});
+            //o('#tree1').on('click', '[data-down]', function () {
+            //    o(this).find('span').length && o(this).parents('.layui-unselect').find('input').val(o(this).text());
+            //});
+            //o('.layui-select-title').click(function () {
+            //    o(this).parent().hasClass('layui-form-selected') ? o(this).next().hide() : o(this).next().show(), o(this).parent().toggleClass('layui-form-selected');
+            //});
+            //o(document).on("click", function (i) {
+            //    !o(i.target).parent().hasClass('layui-select-title') && !o(i.target).parents('table').length && !(!o(i.target).parents('table').length && o(i.target).hasClass('layui-icon')) && o(".layui-form-select").removeClass("layui-form-selected").find('.layui-anim').hide();
+            //});
         });
+    }
+
+    TreeTable.prototype.setUnfolding = function (treeTable, re) {
+        var cellTypeMetaData = this.CellElement.CellType;
+        var unfoldingMode = cellTypeMetaData.SetUnfoldingMode;
+
+        //0：全部收起； 1：全部展开 2：展开到指定级别
+        if (unfoldingMode === 0) {
+            treeTable.closeAll(re);
+        } else if (unfoldingMode == 1) {
+            treeTable.openAll(re);
+        } else {
+            //通过设置节点级别小于展开级别的节点ID实现分级展开
+            var unfoldingLevel = cellTypeMetaData.UnfoldingLevel;
+            var res = "";
+            for (var i = 0; i < re.data.length; i++) {
+                if (re.data[i].level < unfoldingLevel) {
+                    res += "," + re.data[i].ID;
+                }
+            }
+            localStorage.setItem(re.elem.substr(1), res.substr(1));
+            treeTable.render(re);
+        }
     }
     
     TreeTable.prototype.decorateTable = function () {
         var id = "#" + this.ID;
         var self = this;
         var listViewName = self.CellElement.CellType.SetBindingListViewParam.ListViewName;
-
+        //触发点击事件后切换样式并选中listview的对应行
         $(id + "t").on("click", "tr", function () {
             if (!$(this).hasClass("selected")) {
                 $(".selected").not(this).removeClass("selected");
@@ -225,25 +202,30 @@
 
         $(id).css('overflow', 'auto');
         $(id).css('height', "100%");
-        this.addStyle(id);
+        //添加单元格样式
+        this.addStyle();
         if (this.CellElement.CellType.GridLineShow) {
-            this.printGrid(id);
+            //绘制网格线
+            this.printGrid();
         }
-
+        //为单元格预设值添加上选中样式
         $("tr[data-id=" + self.CellElement.Value + "]").addClass("selected");
         Forguncy.Page.getListView(listViewName).selectRow($("tr[data-id=" + self.CellElement.Value + "]").attr("listviewindex"));
     };
 
-    TreeTable.prototype.addStyle = function (id) {
+    TreeTable.prototype.addStyle = function () {
+        var id = "#" + this.ID;
         $(id + "t thead").addClass("TreeTableTreeTable-" + this.CellElement.CellType.TemplateKey + "-tableHead");
         $(id + "t tbody tr").addClass("TreeTableTreeTable-" + this.CellElement.CellType.TemplateKey + "-tableBody");
     };
-
-    TreeTable.prototype.printGrid = function (id) {
+    
+    TreeTable.prototype.printGrid = function () {
+        var id = "#" + this.ID;
         var color = Forguncy.ConvertToCssColor(this.CellElement.CellType.GridLineColor);
         var width = this.CellElement.CellType.GridLineWidth;
-        //var headColor = Forguncy.ConvertToCssColor(this.CellElement.StyleTemplate.Styles.tableHead.NormalStyle.Background);
+
         $(id + "t").css("border", width + "px solid " + color);
+        //仅设置上、右框线，以避免内部框线被加粗
         $(id + "t th").css("border-width", "0px " + width + "px " + width + "px 0px");
         $(id + "t td").css("border-width", "0px " + width + "px " + width + "px 0px");
         $(id + "t th").css("border-style", "solid");
@@ -262,10 +244,13 @@
         }
     };
 
-    TreeTable.prototype.bindEvents = function (cellTypeMetaData) {
+    TreeTable.prototype.bindEvents = function () {
+
         var self = this;
+        var cellTypeMetaData = this.CellElement.CellType
         var listViewName = cellTypeMetaData.SetBindingListViewParam.ListViewName;
         var listView = Forguncy.Page.getListView(listViewName);
+        //当表格重新加载，就重加载页面树型表
         listView.bind("reloaded", function () {
             Forguncy.DelayRefresh.Push(self, function () {
                 Forguncy.DelayRefresh.Push(self, function () {
@@ -274,7 +259,7 @@
             }, "jQueryTreeTable_reloaded2");
         });
 
-
+        //绑定按钮和超链接执行命令
         var fieldInfos = cellTypeMetaData.SetBindingListViewParam.MyFieldInfos;
         var fields = fieldInfos.map((info) => { return info.Field; });
 
@@ -301,7 +286,6 @@
         var container = $("#" + self.ID);
         container.empty();
         var cellTypeMetaData = self.CellElement.CellType;
-        var unfoldingMethod = cellTypeMetaData.SetUnfoldingMethod;
         var listViewData = self.getListViewData(cellTypeMetaData.SetBindingListViewParam);
         var colums = self.getColums(cellTypeMetaData.SetBindingListViewParam);
         var innerContainer = self.fillingTable(self, listViewData, colums, cellTypeMetaData);

@@ -52,7 +52,6 @@ namespace TreeTable
             get; set;
         }
 
-
         [DefaultValue(null)]
         [Browsable(false)]
         public string TemplateKey { get; set; }
@@ -91,6 +90,7 @@ namespace TreeTable
                 SetBindingListViewParam.ListViewName = newName;
             }
         }
+
         public override bool GetDesignerPropertyVisible(string propertyName)
         {
             if (string.Equals(propertyName, nameof(GridLineWidth)) || string.Equals(propertyName, nameof(GridLineColor)))
@@ -140,22 +140,25 @@ namespace TreeTable
     {
 
         private Window window;
-        private IEditorSettingsDataContext dataContext;
-        private IBuilderContext BuilderContext { get; set; }
-
         private SetBindingListView control;
+        private IEditorSettingsDataContext dataContext;
+
+        public IBuilderContext BuilderContext { get; set; }
 
         public SetBindingListViewParamCommand(IBuilderContext builderContext)
         {
             BuilderContext = builderContext;
         }
+
 #pragma warning disable CS0067
         public event EventHandler CanExecuteChanged;
 #pragma warning restore CS0067
+
         public bool CanExecute(object parameter)
         {
             return true;
         }
+
         public void Execute(object parameter)
         {
             dataContext = parameter as IEditorSettingsDataContext;
@@ -188,10 +191,12 @@ namespace TreeTable
             };
             _ = window.ShowDialog();
         }
+
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             window.Close();
         }
+
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
             dataContext.Value = control.ViewModel.Model;
@@ -219,10 +224,6 @@ namespace TreeTable
             CommandList = commandList;
             HyperlinkTemplate = hyperlinkTemplate;
         }
-        public MyFieldInfo Clone()
-        {
-            return new MyFieldInfo(Field, Name, Type, CommandList, HyperlinkTemplate);
-        }
     }
 
     public class ListViewInfo
@@ -231,18 +232,22 @@ namespace TreeTable
         {
             get; set;
         }
+
         public string ID
         {
             get; set;
         }
+
         public string RelatedParentID
         {
             get; set;
         }
+
         public MyFieldInfo[] MyFieldInfos
         {
             get; set;
         }
+
         public ListViewInfo(string listViewName, string id, string relatedParentID, MyFieldInfo[] myFieldInfos)
         {
             ListViewName = listViewName;
@@ -335,9 +340,9 @@ namespace TreeTable
 
         private List<CellTypeStyleTemplate> MakePresetStyleTemplates()
         {
-            var dllDir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location.ToString());
-            var jsPath = System.IO.Path.Combine(dllDir, "Resources", "StyleTemplate", StyleFileName + ".js");
-            var json = File.ReadAllText(System.IO.Path.GetFullPath(jsPath));
+            var dllDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location.ToString());
+            var jsPath = Path.Combine(dllDir, "Resources", "StyleTemplate", StyleFileName + ".js");
+            var json = File.ReadAllText(Path.GetFullPath(jsPath));
             var index = json.LastIndexOf("];");
             if (index > 0)
             {
